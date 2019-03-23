@@ -1,0 +1,15 @@
+package com.vimalkumarpatel.chainofresponsibility;
+
+public abstract class Handler<T> {
+    Handler<T> nextHandler;
+
+    public void setNextHandler(Handler<T> nextHandler) {
+        this.nextHandler = nextHandler;
+    }
+
+    public void doHandling(T t) {
+        if(nextHandler != null) {
+            nextHandler.doHandling(t);
+        }
+    }
+}
