@@ -1,5 +1,7 @@
 **JSON SUMMARY**
 
+[![Build Status](https://travis-ci.org/vimalkumarpatel/json_summary.svg?branch=master)](https://travis-ci.org/vimalkumarpatel/json_summary)
+
 This application is developed as a part of programming assignment.
 
 The main purpose of the application is to stream and parse chunks of JSON file in batch of 1000.
