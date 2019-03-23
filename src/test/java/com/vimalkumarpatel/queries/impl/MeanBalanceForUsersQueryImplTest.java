@@ -1,15 +1,14 @@
 package com.vimalkumarpatel.queries.impl;
 
 import com.vimalkumarpatel.model.User;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.function.ToDoubleFunction;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class MeanBalanceForUsersQueryImplTest {
 

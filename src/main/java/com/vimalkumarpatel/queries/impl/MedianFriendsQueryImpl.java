@@ -29,6 +29,7 @@ public class MedianFriendsQueryImpl extends MedianQuery<User> {
         List<Double> medianFriendsOfBatch = getMedianElements(noOfFriends, Comparator.naturalOrder(), null);
 
         logger.debug("Median friends found, medianFriendsOfBatch = {}", medianFriendsOfBatch);
+        if(medianFriendsOfBatch.size() == 0) return Optional.empty();
         double sum = 0;
         for (double medians : medianFriendsOfBatch) {
             sum = sum + medians;

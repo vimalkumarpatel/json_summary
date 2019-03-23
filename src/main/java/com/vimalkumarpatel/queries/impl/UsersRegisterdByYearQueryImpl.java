@@ -1,7 +1,6 @@
 package com.vimalkumarpatel.queries.impl;
 
 import com.vimalkumarpatel.model.User;
-import com.vimalkumarpatel.queries.Query;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

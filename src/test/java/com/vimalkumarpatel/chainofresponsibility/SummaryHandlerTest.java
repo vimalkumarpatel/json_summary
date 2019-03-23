@@ -4,7 +4,6 @@ import com.vimalkumarpatel.model.Friend;
 import com.vimalkumarpatel.model.requests.SummaryRequest;
 import com.vimalkumarpatel.model.requests.ValueWrapper;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -13,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 
 public class SummaryHandlerTest {
 
