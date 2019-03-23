@@ -40,7 +40,7 @@ public class MedianFriendsQueryImpl extends MedianQuery<User> {
 
     @Override
     public void reset() {
-
+        collectedValues.clear();
     }
 
     @Override

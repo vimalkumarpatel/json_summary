@@ -45,7 +45,7 @@ public class JsonSummarizer {
         logger.info("executing json summarizer complete.");
     }
 
-    private void bootstrapApp() {
+    public void bootstrapApp() {
         this.chainOfResponsibilityHandler = initializeChainOfResponsibility();
 
     }

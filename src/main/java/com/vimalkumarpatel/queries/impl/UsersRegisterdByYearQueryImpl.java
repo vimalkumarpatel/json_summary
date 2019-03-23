@@ -18,7 +18,6 @@ public class UsersRegisterdByYearQueryImpl extends GroupingByQuery<User, String>
     private static final Logger logger = LoggerFactory.getLogger(UsersRegisterdByYearQueryImpl.class);
     private Function<User, String> classifierFunction;
     private Map<String, Long> userCountByYearMap;
-    private Query nextQuery;
 
     public UsersRegisterdByYearQueryImpl(){
         this.userCountByYearMap = new HashMap<>();
@@ -26,8 +25,8 @@ public class UsersRegisterdByYearQueryImpl extends GroupingByQuery<User, String>
             @Override
             public String apply(User user) {
                 if(StringUtils.isEmpty(user.getRegistered())) return "UNKNOWN_YEAR";
-                String [] times = user.getRegistered().split("-");
-                if(ArrayUtils.isEmpty(times)) return "UNKNOWN_YEAR";
+                String [] times = StringUtils.strip(user.getRegistered()).split("-");
+                if(ArrayUtils.isEmpty(times) || StringUtils.isEmpty(times[0])) return "UNKNOWN_YEAR";
                 else return times[0];
             }
         };

@@ -53,4 +53,9 @@ public abstract class MedianQuery<T> implements Query<T> {
         }
     }
 
+    @Override
+    public void reset() {
+        collectedValues.clear();
+    }
+
 }

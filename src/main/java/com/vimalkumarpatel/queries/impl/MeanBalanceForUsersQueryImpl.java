@@ -54,11 +54,6 @@ public class MeanBalanceForUsersQueryImpl extends MeanQuery<User> {
     }
 
     @Override
-    public void reset() {
-
-    }
-
-    @Override
     public void init() {
 
     }

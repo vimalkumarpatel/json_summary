@@ -12,7 +12,6 @@ public abstract class MeanQuery<T> implements Query<T> {
     double totalSum;
     long totalCount;
 
-
     OptionalDouble getMean(List<T> data, ToDoubleFunction<T> mappingFuction){
         return data.stream().mapToDouble(mappingFuction).average();
     }
@@ -29,4 +28,9 @@ public abstract class MeanQuery<T> implements Query<T> {
         }
     }
 
+    @Override
+    public void reset() {
+        this.totalCount = 0;
+        this.totalSum = 0;
+    }
 }

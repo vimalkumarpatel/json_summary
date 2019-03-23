@@ -5,6 +5,8 @@ import com.vimalkumarpatel.model.requests.SummaryRequest;
 import com.vimalkumarpatel.model.requests.ValueWrapper;
 import com.vimalkumarpatel.queries.Query;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 public class UserQueryHandlerTest {
 
@@ -27,6 +30,7 @@ public class UserQueryHandlerTest {
     private User user;
     private SummaryRequest sr;
     private Map<String, Optional> optionals;
+
     @Before
     public void setUp() throws Exception {
         subject = new UserQueryHandler();
@@ -36,11 +40,17 @@ public class UserQueryHandlerTest {
         optionals = new HashMap<>();
     }
 
+    @After
+    public void tearDown() throws Exception {
+        List<User> usersField = (List<User>) FieldUtils.readField(subject, "users", true);
+        usersField.clear();
+    }
+
     @Test
     public void doHandling() throws Exception {
         List<Query> userQueriesField = (List<Query>) FieldUtils.readField(subject, "userQueries", true);
-        Assert.assertNotNull(userQueriesField);
-        Assert.assertEquals(5, userQueriesField.size());
+        assertNotNull(userQueriesField);
+        assertEquals(5, userQueriesField.size());
 
         ValueWrapper spyVW = spy(vw);
         subject.doHandling(vw);
@@ -55,9 +65,32 @@ public class UserQueryHandlerTest {
 
         List<User> usersField = (List<User>) FieldUtils.readField(subject, "users", true);
 
-        Assert.assertNotNull(usersField);
-        Assert.assertEquals(1, usersField.size());
-        Assert.assertEquals(user, usersField.get(0));
+        assertNotNull(usersField);
+        assertEquals(1, usersField.size());
+        assertEquals(user, usersField.get(0));
+    }
+
+    @Test
+    public void doHandling_NonNullUser_1000() throws Exception {
+        List<User> usersField = (List<User>) FieldUtils.readField(subject, "users", true);
+        usersField.clear();
+        vw.setUser(user);
+        subject.doHandling(vw);
+        assertNotNull(usersField);
+
+        for(int i=1;i<999;i++) usersField.add(user);
+
+        Handler spyHandler = spy(new SummaryHandler());
+        subject.setNextHandler(spyHandler);
+
+        assertNull(vw.getSummaryRequest());
+
+        subject.doHandling(vw);
+
+        assertEquals(0, usersField.size());
+        assertNotNull(vw.getSummaryRequest());
+        assertNotNull(vw.getSummaryRequest().getOptionals());
+        assertEquals(5, vw.getSummaryRequest().getOptionals().size());
     }
 
     @Test
@@ -66,10 +99,24 @@ public class UserQueryHandlerTest {
         SummaryRequest spySR = spy(sr);
         vw.setSummaryRequest(spySR);
         List<Query> userQueriesField = (List<Query>) FieldUtils.readField(subject, "userQueries", true);
+        userQueriesField.clear();
+        userQueriesField = spy(userQueriesField);
+        FieldUtils.writeField(subject, "userQueries", userQueriesField, true);
 
         subject.doHandling(vw);
 
-        Assert.assertNotNull(spySR.getOptionals());
-        Assert.assertEquals(5, spySR.getOptionals().size());
+        verify(userQueriesField, times(2)).stream();
+        assertNotNull(spySR.getOptionals());
+        assertEquals(0, spySR.getOptionals().size());
     }
+
+    @Test
+    public void doHandling_NonNullNextHandler() throws Exception {
+        Handler spyHandler = spy(new SummaryHandler());
+        subject.setNextHandler(spyHandler);
+        subject.doHandling(vw);
+        verify(spyHandler, times(1)).doHandling(eq(vw));
+    }
+
+
 }

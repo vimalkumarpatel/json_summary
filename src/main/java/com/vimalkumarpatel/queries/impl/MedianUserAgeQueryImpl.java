@@ -39,11 +39,6 @@ public class MedianUserAgeQueryImpl extends MedianQuery<User> {
     }
 
     @Override
-    public void reset() {
-
-    }
-
-    @Override
     public void init() {
 
     }
