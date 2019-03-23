@@ -1,5 +1,9 @@
 package com.vimalkumarpatel.chainofresponsibility;
 
+/**
+ * A chain of responsibility implementation
+ * @param <T>
+ */
 public abstract class Handler<T> {
     Handler<T> nextHandler;
 

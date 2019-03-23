@@ -60,7 +60,7 @@ public class UserQueryHandlerTest {
         Assert.assertEquals(user, usersField.get(0));
     }
 
-//    @Test
+    @Test
     public void doHandling_NonNullSummaryRequest() throws Exception {
         vw.setUser(null);
         SummaryRequest spySR = spy(sr);
@@ -70,6 +70,6 @@ public class UserQueryHandlerTest {
         subject.doHandling(vw);
 
         Assert.assertNotNull(spySR.getOptionals());
-        Assert.assertEquals(0, spySR.getOptionals().size());
+        Assert.assertEquals(5, spySR.getOptionals().size());
     }
 }

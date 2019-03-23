@@ -12,6 +12,11 @@ import java.util.*;
 
 import static com.vimalkumarpatel.util.Constants.BATCH_SIZE;
 
+/**
+ * this handler will handle User objects.
+ * It encapsulates all the queries for the application.
+ *
+ */
 public class UserQueryHandler extends Handler<ValueWrapper> {
 
     private static final Logger logger = LoggerFactory.getLogger(UserQueryHandler.class);
@@ -65,6 +70,11 @@ public class UserQueryHandler extends Handler<ValueWrapper> {
         }
     }
 
+    /**
+     * this method processes the queries for a batch of users.
+     * @param users
+     * @return map of string summary messages for queries and their corresponding optionals.
+     */
     private Map<String,Optional> processBatch(List<User> users) {
         logger.debug("Starting batch process for Batch Size={}", users.size());
         Map<String, Optional> optionals = new HashMap<>();

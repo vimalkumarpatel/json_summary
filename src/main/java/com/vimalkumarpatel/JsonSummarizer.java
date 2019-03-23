@@ -33,8 +33,11 @@ public class JsonSummarizer {
             exit(1);
         }
 
+        //instantiate and bootstrap the application
         JsonSummarizer jsonSummarizer = new JsonSummarizer();
         jsonSummarizer.bootstrapApp();
+
+        //we may have multiple file. lets try to parse and summarize each one
         for(String filePath : args) {
             jsonSummarizer.parseAndSummarize(filePath);
         }
@@ -47,6 +50,10 @@ public class JsonSummarizer {
 
     }
 
+    /**
+     * this method initializes the chain of responsibility.
+     * @return
+     */
     private static Handler initializeChainOfResponsibility() {
         UserQueryHandler userQueryHandler = new UserQueryHandler();
         SummaryHandler summaryHandler = new SummaryHandler();

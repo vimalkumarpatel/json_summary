@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.ToDoubleFunction;
 
+/**
+ * this query will calculate average balance for users batch wise and for entire json.
+ */
 public class MeanBalanceForUsersQueryImpl extends MeanQuery<User> {
 
     private static final Logger logger = LoggerFactory.getLogger(MeanBalanceForUsersQueryImpl.class);

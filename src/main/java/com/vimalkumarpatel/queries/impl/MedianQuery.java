@@ -14,7 +14,15 @@ public abstract class MedianQuery<T> implements Query<T> {
 
     PriorityQueue<Double> collectedValues;
 
+    /**
+     * support method to calculate the medians of a batch
+     * @param unsortedData
+     * @param comparator
+     * @param mappingFunction
+     * @return
+     */
     List<Double> getMedianElements(List<Double> unsortedData, Comparator<Double> comparator, Function mappingFunction) {
+        if(unsortedData.size()<2) return unsortedData;
         Stream<Double> sortedStream = unsortedData.stream().sorted(comparator);
         List<Double> medianList = unsortedData.size()%2 == 0?
                 sortedStream.skip(unsortedData.size()/2-1).limit(2).collect(Collectors.toList()):
