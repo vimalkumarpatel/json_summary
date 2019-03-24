@@ -16,27 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 public class MedianFriendsQueryImplTest {
 
-    String user_json = "{\n" +
-            "    \"guid\": \"893663ef-1911-4318-a477-626774fc05b6\",\n" +
-            "    \"isActive\": true,\n" +
-            "    \"balance\": \"$4,611.22\",\n" +
-            "    \"age\": 44,\n" +
-            "    \"eyeColor\": \"blue\",\n" +
-            "    \"name\": \"Esperanza Wilkerson\",\n" +
-            "    \"gender\": \"female\",\n" +
-            "    \"email\": \"esperanzawilkerson@avit.com\",\n" +
-            "    \"phone\": \"+1 (920) 582-3308\",\n" +
-            "    \"address\": \"217 Mill Lane, Fivepointville, North Carolina, 8708\",\n" +
-            "    \"registered\": \"2017-11-14T04:11:28 +08:00\",\n" +
-            "    \"friends\": [\n" +
-            "      {\n" +
-            "        \"name\": \"Chan Patel\"\n" +
-            "      }\n" +
-            "    ],\n" +
-            "    \"greeting\": \"Hello, Esperanza Wilkerson! You have 82 unread messages.\",\n" +
-            "    \"favoriteFruit\": \"blueberry\"\n" +
-            "  }";
-
     private MedianFriendsQueryImpl subject;
     List<User> users;
     @Before
@@ -87,6 +66,35 @@ public class MedianFriendsQueryImplTest {
     }
 
     @Test
+    public void output_null_data() throws Exception {
+        User u = new User();
+        users.add(u);
+        Optional optional = subject.process(users);
+        assertTrue(optional.isPresent());
+        assertEquals(0.0D, optional.get());
+
+        optional = subject.output();
+        assertTrue(optional.isPresent());
+        assertEquals(0.0D, optional.get());
+    }
+
+
+    @Test
+    public void output_1Friend_reset() throws Exception {
+        User u = new User(); u.setFriends(new Friend[1]); u.getFriends()[0]=new Friend();
+        users.add(u);
+        Optional optional = subject.process(users);
+        assertTrue(optional.isPresent());
+        assertEquals(1.0, optional.get());
+
+        subject.reset();
+
+        Optional optional1 = subject.output();
+        assertTrue(!optional1.isPresent());
+    }
+
+
+    @Test
     public void output_1Friend() throws Exception {
         User u = new User(); u.setFriends(new Friend[1]); u.getFriends()[0]=new Friend();
         users.add(u);
@@ -114,6 +122,80 @@ public class MedianFriendsQueryImplTest {
         Optional optional1 = subject.output();
         assertTrue(optional1.isPresent());
         assertEquals(2.0, optional1.get());
+    }
+
+    @Test //1,11,30,40,50
+    public void output_mixed_Friend() throws Exception {
+        users.clear();
+        int [] friends = {11,1,50,40,30};
+        for(int i=0;i<5;i++){
+            User u = new User(); u.setFriends(new Friend[friends[i]]);
+            users.add(u);
+        }
+
+        Optional optional = subject.process(users);
+        assertTrue(optional.isPresent());
+        assertEquals(30.0D, optional.get());
+
+    }
+
+    @Test
+    public void output_1To5_Friend() throws Exception {
+        users.clear();
+        for(int i=1;i<=5;i++){
+            User u = new User(); u.setFriends(new Friend[i]);
+            users.add(u);
+        }
+
+        Optional optional = subject.process(users);
+        assertTrue(optional.isPresent());
+        assertEquals(3.0D, optional.get());
+
+        Optional optional1 = subject.output();
+        assertTrue(optional1.isPresent());
+        assertEquals(3.0D, optional1.get());
+    }
+
+    @Test
+    public void output_11To20_Friend() throws Exception {
+
+        users.clear();
+        for(int i=11;i<=20;i++){
+            User u = new User(); u.setFriends(new Friend[i]);
+            users.add(u);
+        }
+
+        Optional optional = subject.process(users);
+        assertTrue(optional.isPresent());
+        assertEquals(15.5D, optional.get());
+
+    }
+
+    @Test
+    public void output_1To5_11To20_Friend() throws Exception {
+
+        for(int i=1;i<=5;i++){
+            User u = new User(); u.setFriends(new Friend[i]);
+            users.add(u);
+        }
+
+        Optional optional = subject.process(users);
+        assertTrue(optional.isPresent());
+        assertEquals(3.0D, optional.get());
+
+        users.clear();
+        for(int i=11;i<=20;i++){
+            User u = new User(); u.setFriends(new Friend[i]);
+            users.add(u);
+        }
+
+        optional = subject.process(users);
+        assertTrue(optional.isPresent());
+        assertEquals(15.5D, optional.get());
+
+        Optional optional1 = subject.output();
+        assertTrue(optional1.isPresent());
+        assertEquals(13.0D, optional1.get());
     }
 
     @Test

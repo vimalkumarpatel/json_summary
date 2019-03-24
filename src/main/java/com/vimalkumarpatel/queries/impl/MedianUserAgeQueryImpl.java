@@ -4,38 +4,26 @@ import com.vimalkumarpatel.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
+import java.util.OptionalDouble;
 
 public class MedianUserAgeQueryImpl extends MedianQuery<User> {
 
     private static final Logger logger = LoggerFactory.getLogger(MedianUserAgeQueryImpl.class);
 
-    public MedianUserAgeQueryImpl() {
-        this.collectedValues = new PriorityQueue<>();
-    }
 
     @Override
-    public Optional process(List<User> users) {
+    public Optional<Double> process(List<User> users) {
         logger.debug("Processing Median User Age for batch");
-        List<Double> userAges = users
+        double [] userAges = users
                 .stream()
-                .mapToDouble(User::getAge).boxed().collect(Collectors.toList());
-        collectedValues.addAll(userAges);
+                .mapToDouble(User::getAge).toArray();
 
-        List<Double> medianAgesForBatch = getMedianElements(userAges, Comparator.naturalOrder(), null);
+        OptionalDouble medianAgesForBatch = getMedian(userAges);
+        logger.debug("Median Age in current batch = {},  medianAgesForBatch = {}", medianAgesForBatch, collectedValues.size());
 
-        logger.debug("Median Age(s) found, medianAgesForBatch = {}", medianAgesForBatch);
-        double sum = 0;
-        for (double medians : medianAgesForBatch) {
-            sum = sum + medians;
-        }
-        Double median = sum / medianAgesForBatch.size();
-        logger.debug("Median Age in current batch = {}, collectedValues.size()", median, collectedValues.size());
-        return Optional.of(median);
+        return (medianAgesForBatch.isPresent()) ? Optional.of(medianAgesForBatch.getAsDouble()) : Optional.empty();
     }
 
     @Override

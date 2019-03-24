@@ -1,36 +1,36 @@
 package com.vimalkumarpatel.queries.impl;
 
 import com.vimalkumarpatel.queries.Query;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.function.ToDoubleFunction;
 
 public abstract class MeanQuery<T> implements Query<T> {
 
-    double totalSum;
-    long totalCount;
+    Mean mean;
 
-    OptionalDouble getMean(List<T> data, ToDoubleFunction<T> mappingFuction){
-        return data.stream().mapToDouble(mappingFuction).average();
+    MeanQuery() {
+        mean = new Mean();
     }
 
-    OptionalDouble getMean(List<Integer> data){
-        return data.stream().mapToInt(i -> i).average();
+    OptionalDouble getMean(double [] data){
+        Mean tempMean = new Mean();
+        Arrays.stream(data).forEach(d -> {
+            tempMean.increment(d);
+            mean.increment(d);
+        });
+        return OptionalDouble.of(tempMean.getResult());
     }
 
     public Optional<Double> output() {
-        if(totalCount == 0) {
-            return Optional.empty();
-        } else {
-            return Optional.of(new Double(totalSum/totalCount));
-        }
+        if(mean.getN() == 0) return Optional.empty();
+        else return Optional.of(mean.getResult());
     }
 
     @Override
     public void reset() {
-        this.totalCount = 0;
-        this.totalSum = 0;
+        mean.clear();
     }
 }

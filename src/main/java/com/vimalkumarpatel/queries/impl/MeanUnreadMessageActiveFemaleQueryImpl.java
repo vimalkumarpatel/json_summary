@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 
 public class MeanUnreadMessageActiveFemaleQueryImpl extends MeanQuery<User> {
     private static final Logger logger = LoggerFactory.getLogger(MeanUnreadMessageActiveFemaleQueryImpl.class);
@@ -43,28 +42,22 @@ public class MeanUnreadMessageActiveFemaleQueryImpl extends MeanQuery<User> {
         };
         this.userPredicate = activeFemalePredicate;
         this.toIntFunction = userUnreadMessages;
-        this.totalCount = 0;
-        this.totalSum = 0;
     }
 
     @Override
     public Optional<Double> process(List<User> users) {
         logger.debug("Processing Mean unread messages for Active Female users");
-        List<Integer> filteredUsersUnreadMessage = users
+        double [] filteredUsersUnreadMessage = users
                 .stream()
                 .filter(userPredicate)
                 .mapToInt(toIntFunction)
-                .boxed()
-                .collect(Collectors.toList());
-        logger.debug("Total active females in current batch = {}", filteredUsersUnreadMessage.size());
+                .asDoubleStream()
+                .toArray();
+        logger.debug("Total active females in current batch = {}", filteredUsersUnreadMessage.length);
 
         OptionalDouble meanForBatch = getMean(filteredUsersUnreadMessage);
         Optional<Double> retValue = Optional.of(meanForBatch.isPresent() ? meanForBatch.getAsDouble() : new Double(0));
         logger.debug("Mean for current batch found ?={}, retValue={}", meanForBatch.isPresent(), retValue.get());
-
-        totalCount = totalCount + filteredUsersUnreadMessage.size();
-        totalSum = totalSum + (filteredUsersUnreadMessage.size() * retValue.get());
-        logger.debug("updated totalCount={}, totalSum={}", totalCount, totalSum);
 
         return retValue;
     }

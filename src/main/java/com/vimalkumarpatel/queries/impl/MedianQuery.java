@@ -1,34 +1,35 @@
 package com.vimalkumarpatel.queries.impl;
 
 import com.vimalkumarpatel.queries.Query;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.PriorityQueue;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 public abstract class MedianQuery<T> implements Query<T> {
 
-    PriorityQueue<Double> collectedValues;
+    List<Double> collectedValues;
+    Median median;
 
+    MedianQuery(){
+        collectedValues = new ArrayList<>();
+        this.median = new Median();
+        median.setData(new double [0]);
+    }
     /**
      * support method to calculate the medians of a batch
-     * @param unsortedData
-     * @param comparator
-     * @param mappingFunction
+     * @param data
      * @return
      */
-    List<Double> getMedianElements(List<Double> unsortedData, Comparator<Double> comparator, Function mappingFunction) {
-        if(unsortedData.size()<2) return unsortedData;
-        Stream<Double> sortedStream = unsortedData.stream().sorted(comparator);
-        List<Double> medianList = unsortedData.size()%2 == 0?
-                sortedStream.skip(unsortedData.size()/2-1).limit(2).collect(Collectors.toList()):
-                sortedStream.skip(unsortedData.size()/2).limit(1).collect(Collectors.toList());
+    OptionalDouble getMedian(double [] data) {
+        if(data != null && data.length == 0) return OptionalDouble.empty();
 
-        return medianList;
+        Double [] dataObj = ArrayUtils.toObject(data);
+        collectedValues.addAll(Arrays.asList(dataObj));
+
+        Median tempMedian = new Median(); tempMedian.setData(data);
+        double batchMedian = tempMedian.evaluate();
+        return (batchMedian == Double.NaN)?OptionalDouble.empty():OptionalDouble.of(batchMedian);
     }
 
 
@@ -36,26 +37,16 @@ public abstract class MedianQuery<T> implements Query<T> {
         if (collectedValues.size() == 0) {
             return Optional.empty();
         } else {
-            int totalSize = collectedValues.size();
-            int toPoll = totalSize%2==0?totalSize/2-1:totalSize/2;
-            for(int i=0;i<toPoll;i++){
-                collectedValues.poll();
-            }
-
-            if(totalSize%2==0) {
-                double d1 = collectedValues.poll();
-                double d2 = collectedValues.poll();
-                return Optional.of(new Double((d1+d2)/2));
-            } else {
-                double d1 = collectedValues.poll();
-                return Optional.of(new Double(d1));
-            }
+            double [] values = collectedValues.stream().mapToDouble(i->i).toArray();
+            double totalMedian = median.evaluate(values);
+            return (totalMedian == Double.NaN)?Optional.empty():Optional.of(totalMedian);
         }
     }
 
     @Override
     public void reset() {
         collectedValues.clear();
+        median = new Median();
     }
 
 }

@@ -26,29 +26,24 @@ public class MeanBalanceForUsersQueryImpl extends MeanQuery<User> {
                         .replaceAll("[$]","")
                         .replaceAll(",","");
                 try{
-                    return Double.valueOf(balStr);
+                    return Double.valueOf(balStr).doubleValue();
                 } catch (NumberFormatException ex){
-                    return Double.valueOf(0);
+                    return 0D;
                 }
             }
         };
 
-        this.totalCount = 0;
-        this.totalSum = 0;
     }
     @Override
-    public Optional process(List<User> data) {
+    public Optional<Double> process(List<User> data) {
         logger.debug("Processing Mean balances for batch");
-        OptionalDouble userBalanceAvg = data
+        double [] userBalance = data
                 .stream()
                 .mapToDouble(toDoubleFunction)
-                .average();
+                .toArray();
+        OptionalDouble userBalanceAvg = getMean(userBalance);
         Optional<Double> retValue = Optional.of(userBalanceAvg.isPresent() ? userBalanceAvg.getAsDouble() : new Double(0));
         logger.debug("Mean for current batch found ?={}, retValue={}", userBalanceAvg.isPresent(), retValue.get());
-
-        totalCount = totalCount + data.size();
-        totalSum = totalSum + (data.size() * retValue.get());
-        logger.debug("updated - total Users={}, total Balance={}", totalCount, totalSum);
 
         return retValue;
     }

@@ -26,8 +26,6 @@ public class MeanUnreadMessageActiveFemaleQueryImplTest {
 
     @Test
     public void constructorInit() throws Exception {
-        assertEquals(0, subject.totalCount);
-        assertEquals(0.0, subject.totalSum, 0.0001);
 
         Predicate<User> userPredicate = (Predicate<User>) FieldUtils.readField(subject, "userPredicate", true);
         ToIntFunction<User> toIntFunction = (ToIntFunction<User>) FieldUtils.readField(subject, "toIntFunction", true);
