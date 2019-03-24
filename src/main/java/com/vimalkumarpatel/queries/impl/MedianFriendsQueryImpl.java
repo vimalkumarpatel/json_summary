@@ -5,43 +5,37 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
+import java.util.OptionalDouble;
+import java.util.function.ToDoubleFunction;
 
 public class MedianFriendsQueryImpl extends MedianQuery<User> {
     private static final Logger logger = LoggerFactory.getLogger(MedianFriendsQueryImpl.class);
 
+    private ToDoubleFunction<User> userToNoOfFriends = new ToDoubleFunction<User>() {
+        @Override
+        public double applyAsDouble(User user) {
+            return (ArrayUtils.isEmpty(user.getFriends())) ? 0 : user.getFriends().length;
+        }
+    };
     public MedianFriendsQueryImpl() {
-        super.collectedValues = new PriorityQueue<>();
+
     }
 
     @Override
-    public Optional process(List<User> users) {
+    public Optional<Double> process(List<User> users) {
         logger.debug("Processing MedianFriends");
-        List<Double> noOfFriends = users
+        double [] noOfFriends = users
                 .stream()
-                .mapToDouble(user -> (ArrayUtils.isEmpty(user.getFriends())) ? 0 : user.getFriends().length).boxed().collect(Collectors.toList());
-        collectedValues.addAll(noOfFriends);
+                .mapToDouble(userToNoOfFriends).toArray();
 
-        List<Double> medianFriendsOfBatch = getMedianElements(noOfFriends, Comparator.naturalOrder(), null);
+        OptionalDouble medianFriendsOfBatch = getMedian(noOfFriends);
 
         logger.debug("Median friends found, medianFriendsOfBatch = {}", medianFriendsOfBatch);
-        if(medianFriendsOfBatch.size() == 0) return Optional.empty();
-        double sum = 0;
-        for (double medians : medianFriendsOfBatch) {
-            sum = sum + medians;
-        }
-        Double median = sum / medianFriendsOfBatch.size();
-        logger.debug("Median number of Friends in current batch = {}, collectedValues.size()={}", median, collectedValues.size());
-        return Optional.of(median);
-    }
-
-    @Override
-    public void reset() {
-        collectedValues.clear();
+        if(!medianFriendsOfBatch.isPresent()) return Optional.empty();
+        logger.debug("Median number of Friends in current batch = {}, collectedValues.size()={}", medianFriendsOfBatch.getAsDouble(), collectedValues.size());
+        return Optional.of(medianFriendsOfBatch.getAsDouble());
     }
 
     @Override
