@@ -1,9 +1,12 @@
 language: java
 jdk:
 - oraclejdk8
-## git strips the wrapper jar file so we have to force its download during the build
-#before_install:
-#  - chmod +x ./mvnw
-#install:
-#- mvn -N io.takari:maven:wrapper
-#- ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B
+addons:
+  sonarcloud:
+    organization: "vimalkumarpatel"
+    token:
+      secure: "eTDutitUepsYGOyQoutdjEXeQHsZBfgCR8WcPawCfBLXgmHJC84cfOA1UR7SLqxVKNu5YO+r1Op+ATP6fMomZuWW5/5nn67EOPAE8UzkdSwI9q/D48z0Spgme0oB+068UWhwUMHi/t0xEp9DdlyrQeiboFp7Mlu6xJQLB8ZdecS1w3GmeJfcCjlYpjdUJThIf0ls/hgxyP3AD5gaM2+Lmfnzd4AeXc/nAARHE3Nd6n+nv26HiUXIQsUSO94fOyxTY5wHufIeeaw8SkhGZApPuCHgA2V1GOGZVj1ewxnUjodkTuRN0f5RBsRF4wW0YQkhoDjoXkVX8nXk2UsQ4GxOT3ssebnC0m2AwXTRx3MuZt94NTS9U2Vvrknxz/UsAB83gxXkSIsSWbRUKHqPSuhbWg7YTnc2oQrDukGOqDrwe9+heXauK8BArZ1LTvIKvwiqCkL7H10DchZavO3qgd0L1Pua9CpdXl3lraAOhV2Jy+IrcB93rnGR2krIsT8n1RyxJlD/PBcPHMoGqGWcJvjZdyZA4X7UeWuBHB4DpcVUuZ/L5OPJvhov9TjzZfh6U3EpFPZPZ8WOqpR/AD0NhkJecVcoIjqHgyzivKN8AflHHVZ08C+/gLgJBDMC7HBRnM99v8SscGl/WwCWwH3KqaWrBL4jWru46TLh6A/1pdiqKVk=" # encrypted value of your token
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
